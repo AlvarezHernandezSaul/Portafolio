@@ -1,7 +1,27 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaPlus, FaEdit, FaTrash, FaTimes, FaSave } from 'react-icons/fa';
+import { 
+  FaPlus, FaEdit, FaTrash, FaTimes, FaSave,
+  FaReact, FaJs, FaHtml5, FaCss3Alt, FaBootstrap, FaNodeJs,
+  FaLaravel, FaPython, FaGitAlt, FaGithub, FaDocker, FaAws,
+  FaTasks, FaBrain, FaUsers, FaLightbulb, FaComments, FaCode
+} from 'react-icons/fa';
+import { 
+  SiTypescript, SiTailwindcss, SiNestjs, SiExpress, 
+  SiFlask, SiFirebase, SiMongodb, SiMysql, SiPostgresql,
+  SiGooglecloud, SiVercel
+} from 'react-icons/si';
 import { getSkills, updateSkills } from '../../../firebase/services';
+
+// Mapa de iconos para renderizar
+const iconMap = {
+  FaReact, FaJs, FaHtml5, FaCss3Alt, FaBootstrap, FaNodeJs,
+  FaLaravel, FaPython, FaGitAlt, FaGithub, FaDocker, FaAws,
+  FaTasks, FaBrain, FaUsers, FaLightbulb, FaComments, FaCode,
+  SiTypescript, SiTailwindcss, SiNestjs, SiExpress,
+  SiFlask, SiFirebase, SiMongodb, SiMysql, SiPostgresql,
+  SiGooglecloud, SiVercel
+};
 
 // Lista de iconos disponibles
 const AVAILABLE_ICONS = {
@@ -202,13 +222,19 @@ const SkillsManager = ({ showMessage }) => {
               </div>
             </div>
           ) : (
-            skills[activeCategory]?.map((skill, index) => (
+            skills[activeCategory]?.map((skill, index) => {
+              const IconComponent = iconMap[skill.icon];
+              return (
               <div key={index} className="col-md-6">
                 <div className="glass p-3 rounded-3">
                   <div className="d-flex justify-content-between align-items-start mb-2">
                     <div className="flex-grow-1">
                       <div className="d-flex align-items-center gap-2 mb-2">
-                        <span className="badge bg-orange">{skill.icon}</span>
+                        {IconComponent ? (
+                          <IconComponent className="text-orange" size={24} />
+                        ) : (
+                          <FaCode className="text-orange" size={24} />
+                        )}
                         <h6 className="text-white mb-0">{skill.name}</h6>
                       </div>
                       <div className="progress" style={{ height: '8px' }}>
@@ -244,7 +270,8 @@ const SkillsManager = ({ showMessage }) => {
                   </div>
                 </div>
               </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>
@@ -314,7 +341,9 @@ const SkillsManager = ({ showMessage }) => {
                 <div className="col-12">
                   <label className="form-label text-light">Icono *</label>
                   <div className="row g-2">
-                    {getFilteredIcons().map(([iconKey, iconData]) => (
+                    {getFilteredIcons().map(([iconKey, iconData]) => {
+                      const IconComponent = iconMap[iconKey];
+                      return (
                       <div key={iconKey} className="col-4 col-md-3">
                         <motion.button
                           type="button"
@@ -322,18 +351,36 @@ const SkillsManager = ({ showMessage }) => {
                           onClick={() => setEditingSkill({ ...editingSkill, icon: iconKey })}
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
-                          style={{ fontSize: '0.75rem', padding: '0.5rem' }}
+                          style={{ padding: '0.75rem 0.5rem' }}
                         >
-                          <div className="text-truncate">{iconKey}</div>
-                          <small className="d-block text-truncate" style={{ fontSize: '0.65rem' }}>
-                            {iconData.name}
-                          </small>
+                          <div className="d-flex flex-column align-items-center gap-1">
+                            {IconComponent ? (
+                              <IconComponent size={24} />
+                            ) : (
+                              <FaCode size={24} />
+                            )}
+                            <small className="text-truncate w-100" style={{ fontSize: '0.65rem' }}>
+                              {iconData.name}
+                            </small>
+                          </div>
                         </motion.button>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
-                  <p className="text-light small mt-2 mb-0">
-                    <strong>Icono seleccionado:</strong> {editingSkill?.icon || 'Ninguno'}
+                  <p className="text-light small mt-2 mb-0 d-flex align-items-center gap-2">
+                    <strong>Icono seleccionado:</strong>
+                    {editingSkill?.icon && iconMap[editingSkill.icon] ? (
+                      <>
+                        {(() => {
+                          const SelectedIcon = iconMap[editingSkill.icon];
+                          return <SelectedIcon className="text-orange" size={20} />;
+                        })()}
+                        <span>{editingSkill.icon}</span>
+                      </>
+                    ) : (
+                      'Ninguno'
+                    )}
                   </p>
                 </div>
 
@@ -342,7 +389,10 @@ const SkillsManager = ({ showMessage }) => {
                     <strong>Vista previa:</strong>
                     <div className="mt-2 p-2 glass rounded">
                       <div className="d-flex align-items-center gap-2 mb-2">
-                        <span className="badge bg-orange">{editingSkill?.icon || 'FaCode'}</span>
+                        {(() => {
+                          const PreviewIcon = iconMap[editingSkill?.icon] || FaCode;
+                          return <PreviewIcon className="text-orange" size={24} />;
+                        })()}
                         <span className="text-white">{editingSkill?.name || 'Nombre de habilidad'}</span>
                       </div>
                       <div className="progress" style={{ height: '8px' }}>
