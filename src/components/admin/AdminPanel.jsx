@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FaSignOutAlt, FaUser, FaBriefcase, FaGraduationCap, 
-  FaCode, FaHome, FaClock
+  FaCode, FaHome, FaClock, FaCogs
 } from 'react-icons/fa';
 import { logout, getSession, renewSession } from '../../utils/auth';
 import {
@@ -17,6 +17,7 @@ import PersonalInfoEditor from './editors/PersonalInfoEditor';
 import ProjectsManager from './editors/ProjectsManager';
 import ExperienceManager from './editors/ExperienceManager';
 import EducationManager from './editors/EducationManager';
+import SkillsManager from './editors/SkillsManager';
 
 const AdminPanel = () => {
   const navigate = useNavigate();
@@ -88,7 +89,8 @@ const AdminPanel = () => {
     { id: 'personal', name: 'Información Personal', icon: FaUser },
     { id: 'projects', name: 'Proyectos', icon: FaCode },
     { id: 'experience', name: 'Experiencia', icon: FaBriefcase },
-    { id: 'education', name: 'Educación', icon: FaGraduationCap }
+    { id: 'education', name: 'Educación', icon: FaGraduationCap },
+    { id: 'skills', name: 'Habilidades', icon: FaCogs }
   ];
 
   if (loading) {
@@ -200,6 +202,11 @@ const AdminPanel = () => {
               <EducationManager 
                 educations={education}
                 setEducations={setEducation}
+                showMessage={showMessage}
+              />
+            )}
+            {activeTab === 'skills' && (
+              <SkillsManager 
                 showMessage={showMessage}
               />
             )}
