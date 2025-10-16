@@ -24,20 +24,26 @@ const AdminLogin = () => {
     setError('');
     setLoading(true);
 
-    // Simular delay de red para seguridad
-    await new Promise(resolve => setTimeout(resolve, 500));
+    try {
+      // Simular delay de red para seguridad
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-    const result = validateCredentials(email, password);
+      // validateCredentials ahora es async
+      const result = await validateCredentials(email, password);
 
-    if (result.success) {
-      createSession(email);
-      navigate('/admin');
-    } else {
-      setError(result.error);
-      setPassword('');
+      if (result.success) {
+        createSession(email);
+        navigate('/admin');
+      } else {
+        setError(result.error);
+        setPassword('');
+      }
+    } catch (error) {
+      console.error('Error en login:', error);
+      setError('Error de conexión. Intenta nuevamente.');
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

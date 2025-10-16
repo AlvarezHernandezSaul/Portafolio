@@ -1,24 +1,12 @@
-import CryptoJS from 'crypto-js';
-
-// Credenciales hardcodeadas (ofuscadas)
-const ADMIN_CREDENTIALS = {
-  email: 'sauldisel4@gmail.com',
-  // Password: 41292002@lv. (SHA256 hash)
-  passwordHash: '8e5c8f8e5a5d5f5e5c5f5e5c5f5e5c5f5e5c5f5e5c5f5e5c5f5e5c5f5e5c5f5e'
-};
+import { validateCredentialsFromFirebase } from '../firebase/authService';
 
 // Configuración de seguridad
 const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutos en milisegundos
 const MAX_LOGIN_ATTEMPTS = 3;
 const LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutos
 
-// Hash de contraseña con SHA256
-export const hashPassword = (password) => {
-  return CryptoJS.SHA256(password).toString();
-};
-
-// Validar credenciales
-export const validateCredentials = (email, password) => {
+// Validar credenciales (ahora async porque consulta Firebase)
+export const validateCredentials = async (email, password) => {
   // Validar formato de email
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
@@ -47,15 +35,15 @@ export const validateCredentials = (email, password) => {
     }
   }
 
-  // Validar credenciales
-  const passwordHash = hashPassword(password);
+  // Validar credenciales contra Firebase
+  const result = await validateCredentialsFromFirebase(email, password);
   
-  if (email === ADMIN_CREDENTIALS.email && passwordHash === hashPassword('41292002@lv.')) {
+  if (result.success) {
     resetLoginAttempts();
     return { success: true };
   } else {
     incrementLoginAttempts();
-    return { success: false, error: 'Credenciales incorrectas' };
+    return { success: false, error: result.error || 'Credenciales incorrectas' };
   }
 };
 
